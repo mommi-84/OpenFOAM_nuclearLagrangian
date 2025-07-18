@@ -1,0 +1,14 @@
+# Ignore build artifacts
+platforms/
+Make/options.*
+*.o
+*.dep
+*.so
+
+# Ignore logs
+log.*
+*.log
+
+# Ignore backups
+*~
+
