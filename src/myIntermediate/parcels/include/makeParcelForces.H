@@ -49,6 +49,7 @@ License
 #include "VirtualMassForce.H"
 #include "InterfaceForce.H"
 #include "CoulombForce.H"
+#include "PairwiseDiffusionForce.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -70,6 +71,7 @@ License
     makeParticleForceModelType(SRFForce, CloudType);                           \
     makeParticleForceModelType(VirtualMassForce, CloudType);                   \
     makeParticleForceModelType(InterfaceForce, CloudType);                     \
+    makeParticleForceModelType(PairwiseDiffusionForce, CloudType);             \
     makeParticleForceModelType(CoulombForce, CloudType);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

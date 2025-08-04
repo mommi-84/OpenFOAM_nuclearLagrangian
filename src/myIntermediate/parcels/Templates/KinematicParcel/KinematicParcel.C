@@ -67,6 +67,8 @@ void Foam::KinematicParcel<ParcelType>::setCellValues
     td.Uc() = td.UInterp().interpolate(this->coordinates(), tetIs);
 
     td.muc() = td.muInterp().interpolate(this->coordinates(), tetIs);
+    
+    td.vortc() = td.vortInterp().interpolate(this->coordinates(), tetIs);
 }
 
 

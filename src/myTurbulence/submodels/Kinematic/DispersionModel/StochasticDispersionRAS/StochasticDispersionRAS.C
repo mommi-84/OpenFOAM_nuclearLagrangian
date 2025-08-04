@@ -88,39 +88,36 @@ Foam::vector Foam::StochasticDispersionRAS<CloudType>::update
 
     const scalar UrelMag = mag(U - Uc - UTurb);
 
+    const scalar eddyLength = cps*pow(k, 1.5)/epsilon;
+
     const scalar tTurbLoc =
-        min(k/epsilon, cps*pow(k, 1.5)/epsilon/(UrelMag + SMALL));
+      min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+     // Parcel is perturbed by the turbulence - REMOVED, the time discretisation is made so that it is always considered particle-eddy interaction
+    //if (dt < tTurbLoc)
+    //{
+    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy 
 
-
-    // Parcel is perturbed by the turbulence
-    if (dt < tTurbLoc)
+    if (tTurb > tTurbLoc)  //Interaction ended, reset interaction time for new edd
     {
-        tTurb += dt;
-
-        if (tTurb > tTurbLoc)
-        {
-            tTurb = 0;
-
-            const scalar sigma = sqrt(2*k/3.0);
-
-            // Calculate a random direction dir distributed uniformly
-            // in spherical coordinates
-
-            const scalar theta = rnd.sample01<scalar>()*twoPi;
-            const scalar u = 2*rnd.sample01<scalar>() - 1;
-
-            const scalar a = sqrt(1 - sqr(u));
-            const vector dir(a*cos(theta), a*sin(theta), u);
-
-            UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
-        }
-    }
-    else
-    {
-        tTurb = GREAT;
-        UTurb = Zero;
+        tTurb = dt;
     }
 
+    if (tTurb == dt) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
+    {
+        const scalar sigma = sqrt(2*k/3.0);
+
+        // Calculate a random direction dir distributed uniformly
+        // in spherical coordinates
+
+        const scalar theta = rnd.sample01<scalar>()*twoPi;
+        const scalar u = 2*rnd.sample01<scalar>() - 1;
+
+        const scalar a = sqrt(1 - sqr(u));
+        const vector dir(a*cos(theta), a*sin(theta), u);
+
+        UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
+    }
+	//}
     return Uc + UTurb;
 }
 

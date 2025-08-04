@@ -51,11 +51,10 @@ volVectorField vort
         "vort",
         runTime.timeName(),
         mesh,
-        IOobject::NO_READ,
+        IOobject::MUST_READ,
         IOobject::AUTO_WRITE
     ),
-    mesh,
-    dimensionedVector("zero", dimensionSet(0, 0, -1, 0, 0, 0, 0), vector::zero)
+    mesh
 );
 
 #include "createPhi.H"

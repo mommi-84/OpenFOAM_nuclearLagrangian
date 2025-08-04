@@ -88,52 +88,44 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
 
     const scalar UrelMag = mag(U - Uc - UTurb);
 
-    //const scalar Cd = 18*muc/(rho*d*d)*(1 + 1/6*pow(rho*UrelMag*d/muc,2/3));
-
-    //const scalar tRel = 4/3*rho*d/(rhoc*UrelMag*Cd + ROOTVSMALL);
+    const scalar eddyLength = cps*pow(k, 1.5)/epsilon;
 
     const scalar tTurbLoc =
-        min(k/epsilon, cps*pow(k, 1.5)/epsilon/(UrelMag + SMALL));
+      min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+     // Parcel is perturbed by the turbulence - REMOVED, the time discretisation is made so that it is always considered particle-eddy interaction
+    //if (dt < tTurbLoc)
+    //{
+    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy
 
     const vector H(
     vortc.x() * Uc.x(),
     vortc.y() * Uc.y(),
     vortc.z() * Uc.z()
     );
-    Info<<"tTurbLoc value: "<<tTurbLoc<<" with dt = "<<dt<<" and tTurb: "<<tTurb<<endl;
-
-
-    // Parcel is perturbed by the turbulence
-    if (dt < tTurbLoc)
+    
+    if (tTurb > tTurbLoc)  //Interaction ended, reset interaction time for new edd
     {
-        tTurb += dt;
-
-        if (tTurb > tTurbLoc)
-        {
-            tTurb = 0;
-
-            const scalar sigma = sqrt(2*k/3.0)*2*sqrt(3.0);
-
-            scalar Gx = 0.5*abs(H[0])/(mag(H) + ROOTVSMALL);
-            scalar Gy = 0.5*abs(H[1])/(mag(H) + ROOTVSMALL);
-            scalar Gz = 0.5*abs(H[2])/(mag(H) + ROOTVSMALL);
-
-            // Calculate a random direction dir distributed uniformly
-            // in spherical coordinates
-
-            const scalar theta = rnd.sample01<scalar>()*twoPi;
-            const scalar u = 2*rnd.sample01<scalar>() - 1;
-
-            const scalar a = sqrt(1 - sqr(u));
-            const vector dir(a*cos(theta)*Gx, a*sin(theta)*Gy, u*Gz);
-
-            UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
-        }
+        tTurb = dt;
     }
-    else
+
+    if (tTurb == dt) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
     {
-        tTurb = GREAT;
-        UTurb = Zero;
+        const scalar sigma = sqrt(2*k/3.0)*2*sqrt(3.0);
+
+        scalar Gx = 0.5*abs(H[0])/(mag(H) + ROOTVSMALL);
+        scalar Gy = 0.5*abs(H[1])/(mag(H) + ROOTVSMALL);
+        scalar Gz = 0.5*abs(H[2])/(mag(H) + ROOTVSMALL);
+
+        // Calculate a random direction dir distributed uniformly
+        // in spherical coordinates
+
+        const scalar theta = rnd.sample01<scalar>()*twoPi;
+        const scalar u = 2*rnd.sample01<scalar>() - 1;
+
+        const scalar a = sqrt(1 - sqr(u));
+        const vector dir(a*cos(theta)*Gx, a*sin(theta)*Gy, u*Gz);
+
+        UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
     }
 
     return Uc + UTurb;
@@ -141,3 +133,4 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
 
 
 // ************************************************************************* //
+

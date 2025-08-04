@@ -71,19 +71,6 @@ int main(int argc, char *argv[])
             Co[cellI] = (cellVolume > VSMALL) ? nParticles / cellVolume : 0.0;
         }
         
-        /*forAll(Co.boundaryField(), patchI)
-	{
-	    if (Co.boundaryField()[patchI].type() == "wall") // or any specific patch type
-	    {
-	        Co.boundaryFieldRef()[patchI] = fixedValueFvPatchScalarField
-	        (
-	            Co.boundaryField()[patchI],
-	            dimensionedScalar("zero", Co.dimensions(), 0.0)
-	        );
-	    }
-	}
-
-        Co.correctBoundaryConditions();*/
         
         Co.setOriented();
 	Co.correctBoundaryConditions();
@@ -97,7 +84,9 @@ int main(int argc, char *argv[])
             {
                 #include "UEqn.H"
                 //Compute vorticity field for designed dispersion model
-                vort = fvc::curl(U);
+	        vort = fvc::curl(U);
+		vort.correctBoundaryConditions();
+
                 #include "TEqn.H"
 
                 while (pimple.correct())
