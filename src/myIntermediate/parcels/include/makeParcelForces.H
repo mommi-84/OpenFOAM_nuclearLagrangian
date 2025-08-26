@@ -61,7 +61,7 @@ License
     makeParticleForceModelType(WenYuDragForce, CloudType);                     \
     makeParticleForceModelType(ErgunWenYuDragForce, CloudType);                \
     makeParticleForceModelType(PlessisMasliyahDragForce, CloudType);           \
-    makeParticleForceModelType(MorsiAlexanderDragForce, CloudType);            \
+    makeParticleForceModelType(MorsiAlexanderDragForce, CloudType);	\
     makeParticleForceModelType(SaffmanMeiLiftForce, CloudType);                \
     makeParticleForceModelType(TomiyamaLiftForce, CloudType);                  \
     makeParticleForceModelType(GravityForce, CloudType);                       \

@@ -80,10 +80,10 @@ Foam::forceSuSp Foam::PairwiseDiffusionForce<CloudType>::calcNonCoupled
     const auto& mesh = cloud.mesh();
 
     const point& pCellCentre = mesh.C()[cellI];
+    const scalar sigma = h_ / 2.0;  // Standard deviation for Gaussian kernel
 
     vector totalForce = vector::zero;
     scalar weightSum = 0.0;
-    scalar sigma = h_/2.0;
 
     forAll(mesh.C(), otherCellI)
     {
@@ -107,7 +107,7 @@ Foam::forceSuSp Foam::PairwiseDiffusionForce<CloudType>::calcNonCoupled
             if (distSqr > sqr(h_)) continue;
             if (mag(dr) < VSMALL) continue;
 
-            const scalar w = 1/sqrt(2*pi*sqr(sigma))* exp(-0.5*sqr(dr/sigma));  // Gaussian Kernel
+            const scalar w = 1/sqrt(2*pi*sqr(sigma))* exp(-0.5*sqr(mag(dr)/sigma));  // Gaussian Kernel
 
             totalForce += w * (dr / mag(dr));  // Normalized direction scaled by weight
             weightSum += w;
@@ -120,6 +120,7 @@ Foam::forceSuSp Foam::PairwiseDiffusionForce<CloudType>::calcNonCoupled
 
     return Foam::forceSuSp(averagedForce, 0.0);
 }
-    
+
+} 
     
 // ************************************************************************* //

@@ -43,7 +43,6 @@ License
 #include "PatchInjection.H"
 #include "PatchInjectionCustom.H"
 #include "PatchFlowRateInjection.H"
-//#include "ParabolicPatchInjection.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

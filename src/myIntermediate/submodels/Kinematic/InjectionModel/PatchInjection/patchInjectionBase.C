@@ -258,7 +258,6 @@ Foam::label Foam::patchInjectionBase::setPositionAndCell
         // Dummy position
         position = pTraits<vector>::max;
     }
-
     return facei;
 }
 

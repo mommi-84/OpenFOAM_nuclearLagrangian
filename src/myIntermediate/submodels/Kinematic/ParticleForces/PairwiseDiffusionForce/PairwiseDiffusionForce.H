@@ -65,10 +65,10 @@ Usage
 
     where the entries mean:
     \table
-      Property | Description                       | Type | Reqd | Deflt
-      type     | Type name: pairwiseDiffusion      | word | yes  | -
-      D        | Diffusivity coefficient           | scalar | yes | -
-      h        | Cutoff radius                     | scalar | yes | -
+      Property | Description                       | Type   | Reqd | Deflt
+      type     | Type name: pairwiseDiffusion      | word   | yes  | -
+      D        | Diffusivity coefficient           | scalar | yes  | -
+      h        | Cutoff radius                     | scalar | yes  | -
     \endtable
 
 SourceFiles

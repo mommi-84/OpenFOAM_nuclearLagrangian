@@ -152,7 +152,6 @@ Foam::label Foam::KinematicLookupTableInjection<CloudType>::parcelsToInject
     {
         return floor(injectorCells_.size()*(time1 - time0)*parcelsPerSecond_);
     }
-
     return 0;
 }
 
