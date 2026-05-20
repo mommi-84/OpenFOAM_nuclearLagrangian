@@ -99,8 +99,9 @@ Usage
 
     Options for the \c \<model\> entry:
     \verbatim
-      RanzMarshall   | Ranz-Marshall correlation for Nusselt number
-      none           | No active model
+      RanzMarshall    | Ranz-Marshall correlation for Nusselt number
+      AhmedYovanovich | Ahmed-Yovanovich correlation for Nusselt number
+      none            | No active model
     \endverbatim
 
 SourceFiles

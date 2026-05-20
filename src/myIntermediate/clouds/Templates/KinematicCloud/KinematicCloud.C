@@ -143,7 +143,7 @@ void Foam::KinematicCloud<CloudType>::solve
 
         evolveCloud(cloud, td);
 
-        if (solution_.coupled())
+        if (solution_.coupledU() || solution_.coupledT())
         {
             cloud.relaxSources(cloud.cloudCopy());
         }
@@ -154,7 +154,7 @@ void Foam::KinematicCloud<CloudType>::solve
 
         evolveCloud(cloud, td);
 
-        if (solution_.coupled())
+        if (solution_.coupledU() || solution_.coupledT())
         {
             cloud.scaleSources();
         }
@@ -224,7 +224,7 @@ void Foam::KinematicCloud<CloudType>::evolveCloud
     typename parcelType::trackingData& td
 )
 {
-    if (solution_.coupled())
+    if (solution_.coupledU() || solution_.coupledT())
     {
         cloud.resetSourceTerms();
     }
@@ -317,10 +317,6 @@ void Foam::KinematicCloud<CloudType>::cloudReset(KinematicCloud<CloudType>& c)
 
     rndGen_ = c.rndGen_;
 
-    //nParticlesDecayed_ = c.nParticlesDecayed_;
-
-    //nParcelsDecayed_ = c.nParcelsDecayed_;
-
     forces_.transfer(c.forces_);
 
     functions_.transfer(c.functions_);
@@ -393,8 +389,6 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
         )
     ),
     rndGen_(Pstream::myProcNo()),
-    //nParticlesDecayed_(0.0),
-    //nParcelsDecayed_(0.0),
     cellOccupancyPtr_(),
     cellLengthScale_(mag(cbrt(mesh_.V()))),
     rho_(rho),
@@ -521,8 +515,6 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
     constProps_(c.constProps_),
     subModelProperties_(c.subModelProperties_),
     rndGen_(c.rndGen_, true),
-    //nParticlesDecayed_(c.nParticlesDecayed_),
-    //nParcelsDecayed_(c.nParcelsDecayed_),
     cellOccupancyPtr_(nullptr),
     cellLengthScale_(c.cellLengthScale_),
     rho_(c.rho_),
@@ -637,8 +629,6 @@ Foam::KinematicCloud<CloudType>::KinematicCloud
     constProps_(),
     subModelProperties_(),
     rndGen_(),
-    //nParticlesDecayed_(c.nParticlesDecayed_),
-    //nParcelsDecayed_(c.nParcelsDecayed_),
     cellOccupancyPtr_(nullptr),
     cellLengthScale_(c.cellLengthScale_),
     rho_(c.rho_),

@@ -100,6 +100,7 @@ inline Foam::KinematicParcel<ParcelType>::KinematicParcel
     rho_(0.0),
     age_(0.0),
     tTurb_(0.0),
+    tTurbLoc_(0.0),
     UTurb_(Zero)
 {}
 
@@ -124,6 +125,7 @@ inline Foam::KinematicParcel<ParcelType>::KinematicParcel
     rho_(0.0),
     age_(0.0),
     tTurb_(0.0),
+    tTurbLoc_(0.0),
     UTurb_(Zero)
 {}
 
@@ -158,6 +160,7 @@ inline Foam::KinematicParcel<ParcelType>::KinematicParcel
     rho_(constProps.rho0()),
     age_(0.0),
     tTurb_(0.0),
+    tTurbLoc_(0.0),
     UTurb_(Zero)
 {}
 
@@ -300,6 +303,13 @@ inline Foam::scalar Foam::KinematicParcel<ParcelType>::tTurb() const
 
 
 template<class ParcelType>
+inline Foam::scalar Foam::KinematicParcel<ParcelType>::tTurbLoc() const
+{
+    return tTurbLoc_;
+}
+
+
+template<class ParcelType>
 inline const Foam::vector& Foam::KinematicParcel<ParcelType>::UTurb() const
 {
     return UTurb_;
@@ -394,6 +404,13 @@ template<class ParcelType>
 inline Foam::scalar& Foam::KinematicParcel<ParcelType>::tTurb()
 {
     return tTurb_;
+}
+
+
+template<class ParcelType>
+inline Foam::scalar& Foam::KinematicParcel<ParcelType>::tTurbLoc()
+{
+    return tTurbLoc_;
 }
 
 

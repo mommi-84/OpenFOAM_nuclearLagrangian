@@ -207,6 +207,13 @@ void Foam::KinematicParcel<ParcelType>::readFields(CloudType& c)
     );
     c.checkFieldIOobject(c, tTurb);
 
+    IOField<scalar> tTurbLoc
+    (
+        c.fieldIOobject("tTurbLoc", IOobject::MUST_READ),
+        readOnProc
+    );
+    c.checkFieldIOobject(c, tTurbLoc);
+
     IOField<vector> UTurb
     (
         c.fieldIOobject("UTurb", IOobject::MUST_READ),
@@ -236,6 +243,7 @@ void Foam::KinematicParcel<ParcelType>::readFields(CloudType& c)
         p.rho_ = rho[i];
         p.age_ = age[i];
         p.tTurb_ = tTurb[i];
+        p.tTurbLoc_ = tTurbLoc[i];
         p.UTurb_ = UTurb[i];
         p.UCorrect_ = UCorrect[i];
 
@@ -276,6 +284,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const CloudType& c)
     IOField<scalar> rho(c.fieldIOobject("rho", IOobject::NO_READ), np);
     IOField<scalar> age(c.fieldIOobject("age", IOobject::NO_READ), np);
     IOField<scalar> tTurb(c.fieldIOobject("tTurb", IOobject::NO_READ), np);
+    IOField<scalar> tTurbLoc(c.fieldIOobject("tTurbLoc", IOobject::NO_READ), np);
     IOField<vector> UTurb(c.fieldIOobject("UTurb", IOobject::NO_READ), np);
     IOField<vector> UCorrect(c.fieldIOobject("UCorrect", IOobject::NO_READ), np);
 
@@ -294,6 +303,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const CloudType& c)
         rho[i] = p.rho();
         age[i] = p.age();
         tTurb[i] = p.tTurb();
+        tTurbLoc[i] = p.tTurbLoc();
         UTurb[i] = p.UTurb();
         UCorrect[i] = p.UCorrect();
 
@@ -311,6 +321,7 @@ void Foam::KinematicParcel<ParcelType>::writeFields(const CloudType& c)
     rho.write(writeOnProc);
     age.write(writeOnProc);
     tTurb.write(writeOnProc);
+    tTurbLoc.write(writeOnProc);
     UTurb.write(writeOnProc);
     UCorrect.write(writeOnProc);
 }
@@ -342,6 +353,7 @@ void Foam::KinematicParcel<ParcelType>::writeProperties
     writeProp("rho", rho_);
     writeProp("age", age_);
     writeProp("tTurb", tTurb_);
+    writeProp("tTurbLoc", tTurbLoc_);
     writeProp("UTurb", UTurb_);
     writeProp("UCorrect", UCorrect_);
 
@@ -372,6 +384,7 @@ void Foam::KinematicParcel<ParcelType>::readObjects
     const auto& rho = cloud::lookupIOField<scalar>("rho", obr);
     const auto& age = cloud::lookupIOField<scalar>("age", obr);
     const auto& tTurb = cloud::lookupIOField<scalar>("tTurb", obr);
+    const auto& tTurbLoc = cloud::lookupIOField<scalar>("tTurbLoc", obr);
     const auto& UTurb = cloud::lookupIOField<vector>("UTurb", obr);
     const auto& UCorrect = cloud::lookupIOField<vector>("UCorrect", obr);
 
@@ -390,6 +403,7 @@ void Foam::KinematicParcel<ParcelType>::readObjects
         p.rho_ = rho[i];
         p.age_ = age[i];
         p.tTurb_ = tTurb[i];
+        p.tTurbLoc_ = tTurbLoc[i];
         p.UTurb_ = UTurb[i];
         p.UCorrect_ = UCorrect[i];
 
@@ -421,6 +435,7 @@ void Foam::KinematicParcel<ParcelType>::writeObjects
     auto& rho = cloud::createIOField<scalar>("rho", np, obr);
     auto& age = cloud::createIOField<scalar>("age", np, obr);
     auto& tTurb = cloud::createIOField<scalar>("tTurb", np, obr);
+    auto& tTurbLoc = cloud::createIOField<scalar>("tTurbLoc", np, obr);
     auto&& UTurb = cloud::createIOField<vector>("UTurb", np, obr);
     auto&& UCorrect = cloud::createIOField<vector>("UCorrect", np, obr);
 
@@ -439,6 +454,7 @@ void Foam::KinematicParcel<ParcelType>::writeObjects
         rho[i] = p.rho();
         age[i] = p.age();
         tTurb[i] = p.tTurb();
+        tTurbLoc[i] = p.tTurbLoc();
         UTurb[i] = p.UTurb();
         UCorrect[i] = p.UCorrect();
 
@@ -470,6 +486,7 @@ Foam::Ostream& Foam::operator<<
             << token::SPACE << p.rho()
             << token::SPACE << p.age()
             << token::SPACE << p.tTurb()
+            << token::SPACE << p.tTurbLoc()
             << token::SPACE << p.UTurb()
             << token::SPACE << p.UCorrect();
     }

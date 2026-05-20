@@ -225,7 +225,7 @@ void Foam::ThermoParcel<ParcelType>::calc
 
     //  Accumulate carrier phase source terms
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    if (cloud.solution().coupled())
+    if (cloud.solution().coupledU() || cloud.solution().coupledT())
     {
         // Update momentum transfer
         cloud.UTrans()[this->cell()] += np0*dUTrans;

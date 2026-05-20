@@ -30,6 +30,7 @@ License
 #include "addToRunTimeSelectionTable.H"
 #include "interpolationCellPoint.H"
 #include "Cloud.H"
+#include "PstreamBuffers.H"
 
 namespace Foam
 {
@@ -57,9 +58,8 @@ PairwiseDiffusionForce<CloudType>::PairwiseDiffusionForce
     D_(dff.D_),
     h_(dff.h_)
 {}
-
+}
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
 template<class CloudType>
 Foam::forceSuSp Foam::PairwiseDiffusionForce<CloudType>::calcNonCoupled
 (
@@ -71,56 +71,156 @@ Foam::forceSuSp Foam::PairwiseDiffusionForce<CloudType>::calcNonCoupled
     const scalar muc
 ) const
 {
+    const int myRank = Pstream::myProcNo();
+    const int nProcs = Pstream::nProcs();
 
-    const label cellI = p.cell();
-    const vector& pos = p.position();
     CloudType& cloud = const_cast<CloudType&>(this->owner());
+    const auto& mesh = cloud.mesh();
     auto& cellOccupancy = cloud.cellOccupancy();
 
-    const auto& mesh = cloud.mesh();
-
+    const label cellI = p.cell();
     const point& pCellCentre = mesh.C()[cellI];
-    const scalar sigma = h_ / 2.0;  // Standard deviation for Gaussian kernel
+    const scalar sigma = h_ / 2.0;
 
     vector totalForce = vector::zero;
-    scalar weightSum = 0.0;
+    scalar weightSum  = 0.0;
 
+    // ---- static cache updated once per timestep ----
+    static label lastTimeIndex = -1;
+    static List<point> remoteCenters;
+    static List<label> remoteCounts;
+
+    const Time& runTime = mesh.time();
+    const label timeIndex = runTime.timeIndex();
+
+    if (timeIndex != lastTimeIndex)
+    {
+        lastTimeIndex = timeIndex;
+
+        remoteCenters.clear();
+        remoteCounts.clear();
+
+        // Build local data
+        List<point> localCenters;
+        List<label> localCounts;
+
+        forAll(mesh.C(), cI)
+        {
+            if (cellOccupancy[cI].size() > 0)
+            {
+                localCenters.append(mesh.C()[cI]);
+                localCounts.append(cellOccupancy[cI].size());
+            }
+        }
+
+        // Use non-blocking PstreamBuffers + UOPstream/UIPstream to avoid
+        // pairwise deadlock when running on many processors. This mirrors
+        // the pattern used elsewhere (e.g. RecycleInteraction).
+        PstreamBuffers pBufs(Pstream::commsTypes::nonBlocking);
+
+        // Send local lists to all other procs using UOPstream wrappers
+        PtrList<UOPstream> UOPstreamPtrs(Pstream::nProcs());
+
+        for (int procI = 0; procI < nProcs; ++procI)
+        {
+            if (procI == myRank) continue;
+
+            auto* osptr = UOPstreamPtrs.get(procI);
+            if (!osptr)
+            {
+                osptr = new UOPstream(procI, pBufs);
+                UOPstreamPtrs.set(procI, osptr);
+            }
+
+            (*osptr) << localCenters << localCounts;
+
+            Pout << "Proc " << myRank
+                << " sent " << localCenters.size()
+                << " cells to proc " << procI
+                << " at time " << runTime.timeName() << endl;
+        }
+
+        // Ensure all sends are finished and incoming buffers are available
+        pBufs.finishedSends();
+
+        // Retrieve data from any procs that sent to us
+        for (const int proci : pBufs.allProcs())
+        {
+            if (pBufs.recvDataCount(proci))
+            {
+                UIPstream is(proci, pBufs);
+                List<point> recCenters;
+                List<label> recCounts;
+                is >> recCenters >> recCounts;
+
+                Pout << "Proc " << myRank
+                    << " received " << recCenters.size()
+                    << " cells from proc " << proci
+                    << " at time " << runTime.timeName() << endl;
+
+                forAll(recCenters, i)
+                {
+                    remoteCenters.append(recCenters[i]);
+                    remoteCounts.append(recCounts[i]);
+                }
+            }
+        }
+    }
+
+    // ---- remote contributions ----
+    forAll(remoteCenters, j)
+    {
+        const point& otherCentre = remoteCenters[j];
+        const label nParcels     = remoteCounts[j];
+
+        if (magSqr(pCellCentre - otherCentre) > sqr(h_)) continue;
+
+        const vector dr = p.position() - otherCentre;
+        const scalar distSqr = magSqr(dr);
+        if (distSqr > sqr(h_)) continue;
+        if (mag(dr) < VSMALL) continue;
+
+        const scalar w =
+            1.0 / sqrt(2.0 * constant::mathematical::pi * sqr(sigma))
+          * exp(-0.5 * sqr(mag(dr)/sigma));
+
+        totalForce += nParcels * w * (dr / mag(dr));
+        weightSum  += nParcels * w;
+    }
+
+    // ---- local contributions (exact parcel interactions) ----
     forAll(mesh.C(), otherCellI)
     {
         const point& otherCentre = mesh.C()[otherCellI];
-
-        if (magSqr(pCellCentre - otherCentre) > sqr(h_))
-        {
-            continue; // Skip cells outside influence radius
-        }
+        if (magSqr(pCellCentre - otherCentre) > sqr(h_)) continue;
 
         const auto& parcelList = cellOccupancy[otherCellI];
 
         for (const auto* qPtr : parcelList)
         {
-            // Skip self-comparison (compare pointers)
             if (qPtr == &p) continue;
 
             const vector dr = p.position() - qPtr->position();
             const scalar distSqr = magSqr(dr);
-
             if (distSqr > sqr(h_)) continue;
             if (mag(dr) < VSMALL) continue;
 
-            const scalar w = 1/sqrt(2*pi*sqr(sigma))* exp(-0.5*sqr(mag(dr)/sigma));  // Gaussian Kernel
+            const scalar w =
+                1.0 / sqrt(2.0 * constant::mathematical::pi * sqr(sigma))
+              * exp(-0.5 * sqr(mag(dr)/sigma));
 
-            totalForce += w * (dr / mag(dr));  // Normalized direction scaled by weight
-            weightSum += w;
+            totalForce += w * (dr / mag(dr));
+            weightSum  += w;
         }
     }
 
-    vector averagedForce = (weightSum > VSMALL)
-        ? D_ * totalForce / weightSum
-        : vector::zero;
+    // ---- final averaged force ----
+    vector averagedForce =
+        (weightSum > VSMALL ? D_ * totalForce / weightSum : vector::zero);
 
     return Foam::forceSuSp(averagedForce, 0.0);
 }
 
-} 
-    
+
+
 // ************************************************************************* //

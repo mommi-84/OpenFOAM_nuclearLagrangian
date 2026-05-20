@@ -75,7 +75,8 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
     const scalar muc,
     const vector& vortc,
     vector& UTurb,
-    scalar& tTurb
+    scalar& tTurb,
+    scalar& tTurbLoc
 )
 {
     Random& rnd = this->owner().rndGen();
@@ -90,12 +91,12 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
 
     const scalar eddyLength = cps*pow(k, 1.5)/epsilon;
 
-    const scalar tTurbLoc =
-      min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
-     // Parcel is perturbed by the turbulence - REMOVED, the time discretisation is made so that it is always considered particle-eddy interaction
-    //if (dt < tTurbLoc)
-    //{
-    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy
+    if (tTurb == 0)
+    {
+      tTurbLoc =
+	min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+    }
+
 
     const vector H(
     vortc.x() * Uc.x(),
@@ -103,13 +104,12 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
     vortc.z() * Uc.z()
     );
     
-    if (tTurb > tTurbLoc)  //Interaction ended, reset interaction time for new edd
-    {
-        tTurb = dt;
-    }
 
-    if (tTurb == dt) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
+    if (tTurb == 0 || tTurb > tTurbLoc) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
     {
+        tTurbLoc =
+	  min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+        
         const scalar sigma = sqrt(2*k/3.0)*2*sqrt(3.0);
 
         scalar Gx = 0.5*abs(H[0])/(mag(H) + ROOTVSMALL);
@@ -127,6 +127,8 @@ Foam::vector Foam::VorticityDispersionRAS<CloudType>::update
 
         UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
     }
+
+    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy
 
     return Uc + UTurb;
 }

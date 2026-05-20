@@ -67,7 +67,7 @@ void Foam::KinematicParcel<ParcelType>::setCellValues
     td.Uc() = td.UInterp().interpolate(this->coordinates(), tetIs);
 
     td.muc() = td.muInterp().interpolate(this->coordinates(), tetIs);
-    
+
     td.vortc() = td.vortInterp().interpolate(this->coordinates(), tetIs);
 }
 
@@ -93,7 +93,8 @@ void Foam::KinematicParcel<ParcelType>::calcDispersion
         td.muc(),
         td.vortc(),
         UTurb_,
-        tTurb_
+        tTurb_,
+        tTurbLoc_
     );
 }
 
@@ -176,7 +177,7 @@ void Foam::KinematicParcel<ParcelType>::calc
 
     // Accumulate carrier phase source terms
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    if (cloud.solution().coupled())
+    if (cloud.solution().coupledU())
     {
         // Update momentum transfer
         cloud.UTrans()[this->cell()] += np0*dUTrans;
@@ -199,7 +200,6 @@ const Foam::vector Foam::KinematicParcel<ParcelType>::calcVelocity
     const scalar mass,
     const vector& Su,
     vector& dUTrans,
-    //scalar kappa,
     scalar& Spu
 ) const
 {
@@ -295,6 +295,7 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
     rho_(p.rho_),
     age_(p.age_),
     tTurb_(p.tTurb_),
+    tTurbLoc_(p.tTurbLoc_),
     UTurb_(p.UTurb_),
     UCorrect_(p.UCorrect_)
 {}
@@ -319,6 +320,7 @@ Foam::KinematicParcel<ParcelType>::KinematicParcel
     rho_(p.rho_),
     age_(p.age_),
     tTurb_(p.tTurb_),
+    tTurbLoc_(p.tTurbLoc_),
     UTurb_(p.UTurb_),
     UCorrect_(p.UCorrect_)
 {}

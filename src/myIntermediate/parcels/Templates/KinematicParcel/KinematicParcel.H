@@ -364,6 +364,9 @@ protected:
             //- Time spent in turbulent eddy [s]
             scalar tTurb_;
 
+            //- Local time spent in turbulent eddy [s]
+            scalar tTurbLoc_;
+
             //- Turbulent velocity fluctuation [m/s]
             vector UTurb_;
 
@@ -411,6 +414,7 @@ public:
           + " rho"
           + " age"
           + " tTurb"
+          + " tTurbLoc"
           + " (UTurbx UTurby UTurbz)"
           + " (UCorrectx UCorrecty UCorrectz)"
         );
@@ -543,6 +547,9 @@ public:
             //- Return const access to time spent in turbulent eddy
             inline scalar tTurb() const;
 
+            //- Return const access to local time spent in turbulent eddy
+            inline scalar tTurbLoc() const;
+
             //- Return const access to turbulent velocity fluctuation
             inline const vector& UTurb() const;
 
@@ -584,6 +591,9 @@ public:
 
             //- Return access to time spent in turbulent eddy
             inline scalar& tTurb();
+
+            //- Return access to local time spent in turbulent eddy
+            inline scalar& tTurbLoc();
 
             //- Return access to turbulent velocity fluctuation
             inline vector& UTurb();
@@ -670,7 +680,7 @@ public:
             );
 
             //- Stokes number
-  inline scalar Stk(const trackingData& td, const scalar L0_, const scalar Uavg_) const;
+            inline scalar Stk(const trackingData& td, const scalar L0_, const scalar Uavg_) const;
 
             //- Stokes number for given conditions
             inline static scalar Stk

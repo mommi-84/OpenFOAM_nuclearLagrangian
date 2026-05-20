@@ -36,7 +36,6 @@ License
 #include "WenYuDragForce.H"
 #include "ErgunWenYuDragForce.H"
 #include "PlessisMasliyahDragForce.H"
-#include "MorsiAlexanderDragForce.H"
 
 #include "SaffmanMeiLiftForce.H"
 #include "TomiyamaLiftForce.H"
@@ -61,7 +60,6 @@ License
     makeParticleForceModelType(WenYuDragForce, CloudType);                     \
     makeParticleForceModelType(ErgunWenYuDragForce, CloudType);                \
     makeParticleForceModelType(PlessisMasliyahDragForce, CloudType);           \
-    makeParticleForceModelType(MorsiAlexanderDragForce, CloudType);	\
     makeParticleForceModelType(SaffmanMeiLiftForce, CloudType);                \
     makeParticleForceModelType(TomiyamaLiftForce, CloudType);                  \
     makeParticleForceModelType(GravityForce, CloudType);                       \
@@ -70,9 +68,9 @@ License
     makeParticleForceModelType(PressureGradientForce, CloudType);              \
     makeParticleForceModelType(SRFForce, CloudType);                           \
     makeParticleForceModelType(VirtualMassForce, CloudType);                   \
-    makeParticleForceModelType(InterfaceForce, CloudType);                     \
     makeParticleForceModelType(PairwiseDiffusionForce, CloudType);             \
-    makeParticleForceModelType(CoulombForce, CloudType);
+    makeParticleForceModelType(InterfaceForce, CloudType);                     \
+    makeParticleForceModelType(CoulombForce, CloudType);                                   
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

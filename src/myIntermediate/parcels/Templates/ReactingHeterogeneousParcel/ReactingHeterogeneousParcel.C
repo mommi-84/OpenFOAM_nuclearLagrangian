@@ -303,20 +303,9 @@ void Foam::ReactingHeterogeneousParcel<ParcelType>::calc
     // 4. Accumulate carrier phase source terms
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    if (cloud.solution().coupled())
+    if (cloud.solution().coupledU() || cloud.solution().coupledT())
     {
         // No mapping between solid components and carrier phase
-        /*
-        forAll(this->Y_, i)
-        {
-            scalar dm = np0*dMassSolid[i];
-            label gid = composition.localToCarrierId(SLD, i);
-            scalar hs = composition.carrier().Hs(gid, pc, T0);
-            cloud.rhoTrans(gid)[this->cell()] += dm;
-            cloud.UTrans()[this->cell()] += dm*U0;
-            cloud.hsTrans()[this->cell()] += dm*hs;
-        }
-        */
 
         forAll(dMassSRCarrier, i)
         {

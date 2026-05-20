@@ -567,7 +567,7 @@ void Foam::ReactingParcel<ParcelType>::calc
     {
         td.keepParticle = false;
 
-        if (cloud.solution().coupled())
+        if (cloud.solution().coupledU() || cloud.solution().coupledT())
         {
             scalar dm = np0*mass0;
 
@@ -630,7 +630,7 @@ void Foam::ReactingParcel<ParcelType>::calc
     // 4. Accumulate carrier phase source terms
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    if (cloud.solution().coupled())
+    if (cloud.solution().coupledU() || cloud.solution().coupledT())
     {
         // Transfer mass lost to carrier mass, momentum and enthalpy sources
         forAll(dMass, i)

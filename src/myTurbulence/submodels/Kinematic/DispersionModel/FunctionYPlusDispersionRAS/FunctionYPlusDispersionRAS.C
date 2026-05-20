@@ -91,7 +91,8 @@ Foam::vector Foam::FunctionYPlusDispersionRAS<CloudType>::update
     const scalar muc,
     const vector& vortc,
     vector& UTurb,
-    scalar& tTurb
+    scalar& tTurb,
+    scalar& tTurbLoc
 )
 {
     Random& rnd = this->owner().rndGen();
@@ -104,7 +105,8 @@ Foam::vector Foam::FunctionYPlusDispersionRAS<CloudType>::update
 
     const scalar UrelMag = mag(U - Uc - UTurb);
 
-    const scalar tTurbLoc =
+    //const scalar 
+    tTurbLoc =
         min(k/epsilon, cps*pow(k, 1.5)/epsilon/(UrelMag + SMALL));
 
 

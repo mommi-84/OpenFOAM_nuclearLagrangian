@@ -94,7 +94,8 @@ public:
             const scalar muc,
             const vector& vortc,
             vector& UTurb,
-            scalar& tTurb
+            scalar& tTurb,
+            scalar& tTurbLoc
         );
 };
 

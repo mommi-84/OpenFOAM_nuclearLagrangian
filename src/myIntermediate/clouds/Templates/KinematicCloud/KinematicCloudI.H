@@ -468,32 +468,6 @@ inline Foam::Random& Foam::KinematicCloud<CloudType>::rndGen() const
 }
 
 
-/*template<class CloudType>
-inline Foam::scalar Foam::KinematicCloud<CloudType>::nParticlesDecayed() const
-{
-    return nParticlesDecayed_;
-}
-
-
-template<class CloudType>
-inline Foam::scalar& Foam::KinematicCloud<CloudType>::nParticlesDecayed()
-{
-    return nParticlesDecayed_;
-}
-
-template<class CloudType>
-inline Foam::scalar Foam::KinematicCloud<CloudType>::nParcelsDecayed() const
-{
-    return nParcelsDecayed_;
-}
-
-
-template<class CloudType>
-inline Foam::scalar& Foam::KinematicCloud<CloudType>::nParcelsDecayed()
-{
-    return nParcelsDecayed_;
-}*/
-
 
 template<class CloudType>
 inline Foam::List<Foam::DynamicList<typename CloudType::particleType*>>&
@@ -592,7 +566,7 @@ Foam::KinematicCloud<CloudType>::Srhok() const
     }
     debug = debug0;
 
-    if (this->solution().coupled())
+    if (this->solution().coupledU())
     {
         return rhokTrans()/this->db().time().deltaT()/this->mesh().V();
     }
@@ -637,7 +611,7 @@ const
         dim.reset(dimForce/dimDensity);
     }
 
-    if (solution_.coupled())
+    if (solution_.coupledU())
     {
         if (solution_.semiImplicit("U"))
         {

@@ -33,7 +33,6 @@ License
 
 #include "SphereDragForce.H"
 #include "NonSphereDragForce.H"
-#include "MorsiAlexanderDragForce.H"
 
 #include "SaffmanMeiLiftForce.H"
 #include "TomiyamaLiftForce.H"
@@ -45,6 +44,8 @@ License
 #include "SRFForce.H"
 #include "VirtualMassForce.H"
 #include "CoulombForce.H"
+#include "PairwiseDiffusionForce.H"
+#include "ThermophoreticForce.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -53,7 +54,6 @@ License
     makeParticleForceModel(CloudType);                                         \
     makeParticleForceModelType(SphereDragForce, CloudType);                    \
     makeParticleForceModelType(NonSphereDragForce, CloudType);                 \
-    makeParticleForceModelType(MorsiAlexanderDragForce, CloudType);    	       \
     makeParticleForceModelType(SaffmanMeiLiftForce, CloudType);                \
     makeParticleForceModelType(TomiyamaLiftForce, CloudType);                  \
     makeParticleForceModelType(GravityForce, CloudType);                       \
@@ -62,6 +62,8 @@ License
     makeParticleForceModelType(PressureGradientForce, CloudType);              \
     makeParticleForceModelType(SRFForce, CloudType);                           \
     makeParticleForceModelType(VirtualMassForce, CloudType);                   \
+    makeParticleForceModelType(PairwiseDiffusionForce, CloudType);             \
+    makeParticleForceModelType(ThermophoreticForce, CloudType);                \
     makeParticleForceModelType(CoulombForce, CloudType);
 
 

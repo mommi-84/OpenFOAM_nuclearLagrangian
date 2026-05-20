@@ -75,7 +75,8 @@ Foam::vector Foam::StochasticDispersionRAS<CloudType>::update
     const scalar muc,
     const vector& vortc,
     vector& UTurb,
-    scalar& tTurb
+    scalar& tTurb,
+    scalar& tTurbLoc
 )
 {
     Random& rnd = this->owner().rndGen();
@@ -88,23 +89,36 @@ Foam::vector Foam::StochasticDispersionRAS<CloudType>::update
 
     const scalar UrelMag = mag(U - Uc - UTurb);
 
+    scalar flag = 1 - SMALL;
+
     const scalar eddyLength = cps*pow(k, 1.5)/epsilon;
 
-    const scalar tTurbLoc =
-      min(eddyLength/pow(2*k/3, 0.5), eddyLength/(UrelMag + SMALL)); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
-     // Parcel is perturbed by the turbulence - REMOVED, the time discretisation is made so that it is always considered particle-eddy interaction
-    //if (dt < tTurbLoc)
-    //{
-    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy 
+    const scalar eddyLifetime = -0.3*k/epsilon*log(rnd.sample01<scalar>() + SMALL);  //As Fluent computes the characteristic eddy lifetime
 
-    if (tTurb > tTurbLoc)  //Interaction ended, reset interaction time for new edd
+    const scalar partRelTime = rho*pow(d,2)/(18*muc);   //Particle relaxation time
+    const scalar corrFactor = 1;
+
+    if (eddyLength/(partRelTime*UrelMag) < 1)
     {
-        tTurb = dt;
+      flag = eddyLength/(partRelTime*UrelMag);
     }
 
-    if (tTurb == dt) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
+    const scalar tCross = -partRelTime*log(1 - flag);   //Particle eddy crossing time
+
+    
+    if (tTurb == 0)
     {
-        const scalar sigma = sqrt(2*k/3.0);
+      tTurbLoc =
+	min(eddyLifetime, tCross); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+    }
+
+  
+    if (tTurb == 0 || tTurb > tTurbLoc) //Computes the direction imposed by the specific eddy, it will remain constant throughout the whole interaction
+    {
+        tTurbLoc =
+	  min(eddyLifetime, tCross); //Interaction time taken as the minimum between the eddy lifetime and particle crossing time
+        
+        const scalar sigma = sqrt(2*k/3.0)*corrFactor;
 
         // Calculate a random direction dir distributed uniformly
         // in spherical coordinates
@@ -117,7 +131,9 @@ Foam::vector Foam::StochasticDispersionRAS<CloudType>::update
 
         UTurb = sigma*mag(rnd.GaussNormal<scalar>())*dir;
     }
-	//}
+
+    tTurb += dt;  //Tracks the cumulative time a particle interacts with an eddy
+
     return Uc + UTurb;
 }
 
