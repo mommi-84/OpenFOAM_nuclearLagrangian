@@ -2,6 +2,7 @@ SOURCE = \
 $(KINEMATICPARCEL)/makeBasicKinematicParcelSubmodels.C \
 $(KINEMATICCOLLIDINGPARCEL)/makeBasicKinematicCollidingParcelSubmodels.C \
 $(THERMOPARCEL)/makeBasicThermoParcelSubmodels.C \
+$(NUCLEARPARCEL)/makeBasicNuclearParcelSubmodels.C \
 $(REACTINGPARCEL)/makeBasicReactingParcelSubmodels.C \
 $(REACTINGMPPARCEL)/makeBasicReactingMultiphaseParcelSubmodels.C \
 $(KINEMATICMPPICPARCEL)/makeBasicKinematicMPPICParcelSubmodels.C \

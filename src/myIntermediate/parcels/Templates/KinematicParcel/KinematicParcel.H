@@ -133,6 +133,9 @@ public:
             //- Minimum parcel mass [kg]
             demandDrivenEntry<scalar> minParcelMass_;
 
+            //- Particle clusterisation characteristic time [s] (constant)
+            demandDrivenEntry<scalar> tau_;
+
 
     public:
 
@@ -170,6 +173,9 @@ public:
 
             //- Return const access to the minimum parcel mass
             inline scalar minParcelMass() const;
+
+            //- Return const access to the particle clusterisation characteristic time
+            inline scalar tau() const;
     };
 
 

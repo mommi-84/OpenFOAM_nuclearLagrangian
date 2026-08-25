@@ -42,7 +42,8 @@ Foam::KinematicParcel<ParcelType>::constantProperties::constantProperties()
     rho0_(dict_, 0.0),
     lambda_(dict_, 0.0),
     D0_(dict_, 0.0),
-    minParcelMass_(dict_, 0.0)
+    minParcelMass_(dict_, 0.0),
+    tau_(dict_, -1.0)
 {}
 
 
@@ -58,7 +59,8 @@ inline Foam::KinematicParcel<ParcelType>::constantProperties::constantProperties
     rho0_(cp.rho0_),
     lambda_(cp.lambda_),
     D0_(cp.D0_),
-    minParcelMass_(cp.minParcelMass_)
+    minParcelMass_(cp.minParcelMass_),
+    tau_(cp.tau_)
 {}
 
 
@@ -74,7 +76,8 @@ inline Foam::KinematicParcel<ParcelType>::constantProperties::constantProperties
     rho0_(dict_, "rho0", -1),
     lambda_(dict_, "lambda", 0),
     D0_(dict_, "D0", 0),
-    minParcelMass_(dict_, "minParcelMass", 1e-15)
+    minParcelMass_(dict_, "minParcelMass", 1e-15),
+    tau_(dict_, "tau", -1)
 {}
 
 
@@ -220,6 +223,13 @@ inline Foam::scalar
 Foam::KinematicParcel<ParcelType>::constantProperties::minParcelMass() const
 {
     return minParcelMass_.value();
+}
+
+template<class ParcelType>
+inline Foam::scalar
+Foam::KinematicParcel<ParcelType>::constantProperties::tau() const
+{
+    return tau_.value();
 }
 
 

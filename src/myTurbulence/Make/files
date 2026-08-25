@@ -10,6 +10,9 @@ $(KINEMATICCOLLIDINGPARCEL)/makeBasicKinematicCollidingParcelSubmodels.C
 THERMOPARCEL=$(DERIVEDPARCELS)/basicThermoParcel
 $(THERMOPARCEL)/makeBasicThermoParcelSubmodels.C
 
+NUCLEARPARCEL=$(DERIVEDPARCELS)/basicNuclearParcel
+$(NUCLEARPARCEL)/makeBasicNuclearParcelSubmodels.C
+
 REACTINGPARCEL=$(DERIVEDPARCELS)/basicReactingParcel
 $(REACTINGPARCEL)/makeBasicReactingParcelSubmodels.C
 

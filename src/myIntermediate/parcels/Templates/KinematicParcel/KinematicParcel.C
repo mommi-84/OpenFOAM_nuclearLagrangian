@@ -418,6 +418,11 @@ bool Foam::KinematicParcel<ParcelType>::move
             p.hitFace(s, cloud, ttd);
         }
 
+	if(p.d() < 1e-3 && cloud.constProps().tau() > 0 && p.active())
+        {
+            p.d() *= exp(dt/cloud.constProps().tau());
+        }
+
         const scalar nPartOld = p.nParticle();
         p.nParticle() *= exp(-cloud.constProps().lambda() * dt);
         p.nParticlesDecayed() += nPartOld - p.nParticle();

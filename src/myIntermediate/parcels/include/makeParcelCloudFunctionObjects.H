@@ -33,6 +33,7 @@ License
 
 #include "FaceInteraction.H"
 #include "FacePostProcessing.H"
+#include "FunctionalRemoveParcels.H"
 #include "ParticleCollector.H"
 #include "ParticleErosion.H"
 #include "ParticleTracks.H"
@@ -57,6 +58,7 @@ License
                                                                                \
     makeCloudFunctionObjectType(FaceInteraction, CloudType);                   \
     makeCloudFunctionObjectType(FacePostProcessing, CloudType);                \
+    makeCloudFunctionObjectType(FunctionalRemoveParcels, CloudType);           \
     makeCloudFunctionObjectType(ParticleCollector, CloudType);                 \
     makeCloudFunctionObjectType(ParticleErosion, CloudType);                   \
     makeCloudFunctionObjectType(ParticleTracks, CloudType);                    \

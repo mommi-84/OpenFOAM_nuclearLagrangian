@@ -95,12 +95,12 @@ Foam::vector Foam::StochasticDispersionRAS<CloudType>::update
 
     const scalar eddyLifetime = -0.3*k/epsilon*log(rnd.sample01<scalar>() + SMALL);  //As Fluent computes the characteristic eddy lifetime
 
-    const scalar partRelTime = rho*pow(d,2)/(18*muc);   //Particle relaxation time
+    const scalar partRelTime = rho*pow(d,2)/(18*muc+SMALL);   //Particle relaxation time
     const scalar corrFactor = 1;
 
-    if (eddyLength/(partRelTime*UrelMag) < 1)
+    if (eddyLength/(partRelTime*UrelMag+SMALL) < 1)
     {
-      flag = eddyLength/(partRelTime*UrelMag);
+      flag = eddyLength/(partRelTime*UrelMag+SMALL);
     }
 
     const scalar tCross = -partRelTime*log(1 - flag);   //Particle eddy crossing time
