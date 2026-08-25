@@ -12,7 +12,7 @@
       - fvm::laplacian(alphaEff, T)
      ==
         radiation->ST(rhoCpRef, T)
-      + FP.Sh(T, rhoInfValue, CpRef)
+	//+ FP.Sh(T, rhoInfValue, CpRef)
       + fvOptions(T)
     );
 
